@@ -50,12 +50,7 @@ const Page = () => {
     );
   }
 
-  // Render default content when not loading
-  return (
-    <div>
-      {/* Your default content here */}
-    </div>
-  );
+  
 }
 
 export default Page;
