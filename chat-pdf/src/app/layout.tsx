@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
 import Providers from "@/components/Providers";
+import { Toaster } from "@/components/ui/toaster";
 
 import "react-loading-skeleton/dist/skeleton.css"
 
@@ -23,6 +24,7 @@ export default function RootLayout({
     <html lang="en" className="light">
       <Providers>
         <body className={cn('min-h-screen font-sans antialiased grainy', inter.className)}>
+          <Toaster/>
           <Navbar/>
           {children}
         </body>
