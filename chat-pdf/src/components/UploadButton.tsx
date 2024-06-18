@@ -16,64 +16,70 @@ const UploadDropZone = () => {
 
     const [isUploading, setIsUploading] = useState<boolean>(false)
     const [uploadProgress, setUploadProgress] = useState<number>(0)
-
-    const {toast} = useToast()
+    const { toast } = useToast()
     const {startUpload} = useUploadThing("pdfUploader")
 
-    const {mutate: startPolling} = trpc.getFile.useMutation({
-        onSuccess: (file) => {
+    const { mutate: startPolling } = trpc.getFile.useMutation(
+        {
+          onSuccess: (file) => {
             router.push(`/dashboard/${file.id}`)
-        },
-        retry:true,
-        retryDelay: 500,
-    })
+          },
+          retry: true,
+          retryDelay: 500,
+        }
+    )
 
     const startSimulatedProgress = () => {
         setUploadProgress(0)
-
+    
         const interval = setInterval(() => {
-            setUploadProgress((prevProgress) => {
-                if(prevProgress >= 95){
-                    clearInterval(interval)
-                    return prevProgress
-                }
-                return prevProgress + 5
-            })
+          setUploadProgress((prevProgress) => {
+            if (prevProgress >= 95) {
+              clearInterval(interval)
+              return prevProgress
+            }
+            return prevProgress + 5
+          })
         }, 500)
+    
         return interval
     }
 
     return (
-        <Dropzone multiple={false} onDrop={async (acceptedFile) => {
+        <Dropzone
+        multiple={false}
+        onDrop={async (acceptedFile) => {
             setIsUploading(true)
+
             const progressInterval = startSimulatedProgress()
 
-            //handle file uploading
+            // handle file uploading
             const res = await startUpload(acceptedFile)
-            
-            if(!res){
-                return toast({
-                    title: 'Something went wrong',
-                    description: 'Please try again later',
-                    variant: "destructive",
-                })
+
+            if (!res) {
+            return toast({
+                title: 'Something went wrong',
+                description: 'Please try again later',
+                variant: 'destructive',
+            })
             }
 
             const [fileResponse] = res
-            const key = fileResponse.key
 
-            if(!key){
-                return toast({
-                    title: 'Something went wrong',
-                    description: 'Please try again later',
-                    variant: "destructive",
-                })
+            const key = fileResponse?.key
+
+            if (!key) {
+            return toast({
+                title: 'Something went wrong',
+                description: 'Please try again later',
+                variant: 'destructive',
+            })
             }
 
             clearInterval(progressInterval)
             setUploadProgress(100)
 
-            startPolling({key})
+            startPolling({ key })
         }}>
             {({getRootProps, getInputProps, acceptedFiles}) => (
                 <div {...getRootProps()} className="border h-64 m-4 border-dashed border-gray-300 rounded-lg">
@@ -129,20 +135,24 @@ const UploadButton = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
     return (
-        <Dialog open={isOpen} onOpenChange={(v) => {
-            if(!v){
-                setIsOpen(v)
+        <Dialog
+          open={isOpen}
+          onOpenChange={(v) => {
+            if (!v) {
+              setIsOpen(v)
             }
-        }}>
-            <DialogTrigger onClick={() => setIsOpen(true)} asChild>
-                <Button>Upload PDF</Button>
-            </DialogTrigger>
-
-            <DialogContent>
-                <UploadDropZone/>
-            </DialogContent>
+          }}>
+          <DialogTrigger
+            onClick={() => setIsOpen(true)}
+            asChild>
+            <Button>Upload PDF</Button>
+          </DialogTrigger>
+    
+          <DialogContent>
+            <UploadDropZone />
+          </DialogContent>
         </Dialog>
-    )
+      )
 }
 
 export default UploadButton
